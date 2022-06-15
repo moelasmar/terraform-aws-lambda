@@ -1,0 +1,40 @@
+Resources:
+  aws_lambda_function_4b9415293b:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: aws_lambda_function_4b9415293b
+      Handler: index.lambda_handler
+      PackageType: Zip
+      Runtime: python3.8
+      Layers:
+      - Ref: aws_lambda_layer_version_ad03a6365f
+    Metadata:
+      BuildMethod: makefile
+      OverrideWatchPath: /Volumes/workplace/terraform-apps/terraform-aws-lambda/examples/simple/./fixtures/python3.8-app1/
+      SamResourceId: module.lambda_function.aws_lambda_function.this[0]
+      SkipBuild: false
+  aws_lambda_function_056b1a911b:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code: aws_lambda_function_056b1a911b
+      Handler: index.lambda_handler
+      PackageType: Zip
+      Runtime: python3.8
+      Layers:
+      - Ref: aws_lambda_layer_version_ad03a6365f
+    Metadata:
+      BuildMethod: makefile
+      OverrideWatchPath: /Volumes/workplace/terraform-apps/terraform-aws-lambda/examples/simple/./fixtures/python3.8-app2/
+      SamResourceId: module.lambda_function_2.aws_lambda_function.this[0]
+      SkipBuild: false
+  aws_lambda_layer_version_ad03a6365f:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+      - python3.8
+      Content: aws_lambda_layer_version_ad03a6365f
+    Metadata:
+      BuildMethod: makefile
+      OverrideWatchPath: /Volumes/workplace/terraform-apps/terraform-aws-lambda/examples/simple/./fixtures/python3.8-layer
+      SamResourceId: module.lambda_layer_local.aws_lambda_layer_version.this[0]
+      SkipBuild: false

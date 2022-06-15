@@ -1,0 +1,5 @@
+samdev build --hook-package-id tf
+samdev local invoke --hook-package-id tf module.lambda_function.aws_lambda_function.this[0]
+samdev local invoke --hook-package-id tf module.lambda_function_2.aws_lambda_function.this[0]
+
+samdev sync --hook-package-id tf --no-dependency-layer --beta-features --watch --region us-west-1

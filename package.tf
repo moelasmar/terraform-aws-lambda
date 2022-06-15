@@ -72,3 +72,25 @@ resource "null_resource" "archive" {
 
   depends_on = [local_file.archive_plan]
 }
+
+resource "sammetadata_metadata" "functions_metadata" {
+  count = var.create && var.create_function && !var.create_layer ? 1 : 0
+  name= "aws_lambda_function.this[0]"
+  type= "lambda"
+  source_code= jsonencode(var.source_path)
+  source_code_property= "path"
+  built_path_property= data.external.archive_prepare[0].result.filename
+
+  depends_on = [data.external.archive_prepare, null_resource.archive]
+}
+
+resource "sammetadata_metadata" "layers_metadata" {
+  count = var.create && var.create_layer ? 1 : 0
+  name= "aws_lambda_layer_version.this[0]"
+  type= "layer"
+  source_code= jsonencode(var.source_path)
+  source_code_property= "path"
+  built_path_property= data.external.archive_prepare[0].result.filename
+
+  depends_on = [data.external.archive_prepare, null_resource.archive]
+}

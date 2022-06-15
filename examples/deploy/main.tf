@@ -23,6 +23,7 @@ module "lambda_function" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
   hash_extra  = "yo1"
+  architectures = ["x86_64"]
 }
 
 module "alias_refresh" {

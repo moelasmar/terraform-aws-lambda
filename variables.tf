@@ -335,7 +335,7 @@ variable "cloudwatch_logs_tags" {
 # IAM
 ######
 
-variable "role_name" {
+variable "rolename" {
   description = "Name of IAM role to use for Lambda Function"
   type        = string
   default     = null

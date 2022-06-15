@@ -6,5 +6,9 @@ terraform {
     external = ">= 1"
     local    = ">= 1"
     null     = ">= 2"
+    sammetadata = {
+      version = ">= 3"
+      source  = "amazon.com/aws/sammetadata"
+    }
   }
 }
