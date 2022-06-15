@@ -1,10 +1,10 @@
 locals {
-  create_role = var.create && var.create_function && !var.create_layer && var.create_role
+  create_role = local.create && var.create_function && !var.create_layer && var.create_role
 
   # Lambda@Edge uses the Cloudwatch region closest to the location where the function is executed
   # The region part of the LogGroup ARN is then replaced with a wildcard (*) so Lambda@Edge is able to log in every region
-  log_group_arn_regional = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
-  log_group_name         = element(concat(data.aws_cloudwatch_log_group.lambda.*.name, aws_cloudwatch_log_group.lambda.*.name, [""]), 0)
+  log_group_arn_regional = try(data.aws_cloudwatch_log_group.lambda[0].arn, aws_cloudwatch_log_group.lambda[0].arn, "")
+  log_group_name         = try(data.aws_cloudwatch_log_group.lambda[0].name, aws_cloudwatch_log_group.lambda[0].name, "")
   log_group_arn          = local.create_role && var.lambda_at_edge ? format("arn:%s:%s:%s:%s:%s", data.aws_arn.log_group_arn[0].partition, data.aws_arn.log_group_arn[0].service, "*", data.aws_arn.log_group_arn[0].account, data.aws_arn.log_group_arn[0].resource) : local.log_group_arn_regional
 
   # Defaulting to "*" (an invalid character for an IAM Role name) will cause an error when
@@ -57,13 +57,13 @@ data "aws_iam_policy_document" "assume_role" {
     for_each = var.assume_role_policy_statements
 
     content {
-      sid         = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
-      effect      = lookup(statement.value, "effect", null)
-      actions     = lookup(statement.value, "actions", null)
-      not_actions = lookup(statement.value, "not_actions", null)
+      sid         = try(statement.value.sid, replace(statement.key, "/[^0-9A-Za-z]*/", ""))
+      effect      = try(statement.value.effect, null)
+      actions     = try(statement.value.actions, null)
+      not_actions = try(statement.value.not_actions, null)
 
       dynamic "principals" {
-        for_each = lookup(statement.value, "principals", [])
+        for_each = try(statement.value.principals, [])
         content {
           type        = principals.value.type
           identifiers = principals.value.identifiers
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "assume_role" {
       }
 
       dynamic "not_principals" {
-        for_each = lookup(statement.value, "not_principals", [])
+        for_each = try(statement.value.not_principals, [])
         content {
           type        = not_principals.value.type
           identifiers = not_principals.value.identifiers
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "assume_role" {
       }
 
       dynamic "condition" {
-        for_each = lookup(statement.value, "condition", [])
+        for_each = try(statement.value.condition, [])
         content {
           test     = condition.value.test
           variable = condition.value.variable
@@ -345,15 +345,15 @@ data "aws_iam_policy_document" "additional_inline" {
     for_each = var.policy_statements
 
     content {
-      sid           = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
-      effect        = lookup(statement.value, "effect", null)
-      actions       = lookup(statement.value, "actions", null)
-      not_actions   = lookup(statement.value, "not_actions", null)
-      resources     = lookup(statement.value, "resources", null)
-      not_resources = lookup(statement.value, "not_resources", null)
+      sid           = try(statement.value.sid, replace(statement.key, "/[^0-9A-Za-z]*/", ""))
+      effect        = try(statement.value.effect, null)
+      actions       = try(statement.value.actions, null)
+      not_actions   = try(statement.value.not_actions, null)
+      resources     = try(statement.value.resources, null)
+      not_resources = try(statement.value.not_resources, null)
 
       dynamic "principals" {
-        for_each = lookup(statement.value, "principals", [])
+        for_each = try(statement.value.principals, [])
         content {
           type        = principals.value.type
           identifiers = principals.value.identifiers
@@ -361,7 +361,7 @@ data "aws_iam_policy_document" "additional_inline" {
       }
 
       dynamic "not_principals" {
-        for_each = lookup(statement.value, "not_principals", [])
+        for_each = try(statement.value.not_principals, [])
         content {
           type        = not_principals.value.type
           identifiers = not_principals.value.identifiers
@@ -369,7 +369,7 @@ data "aws_iam_policy_document" "additional_inline" {
       }
 
       dynamic "condition" {
-        for_each = lookup(statement.value, "condition", [])
+        for_each = try(statement.value.condition, [])
         content {
           test     = condition.value.test
           variable = condition.value.variable

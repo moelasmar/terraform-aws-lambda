@@ -28,6 +28,18 @@ variable "create_role" {
   default     = true
 }
 
+variable "create_lambda_function_url" {
+  description = "Controls whether the Lambda Function URL resource should be created"
+  type        = bool
+  default     = false
+}
+
+variable "putin_khuylo" {
+  description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
+  type        = bool
+  default     = true
+}
+
 ###########
 # Function
 ###########
@@ -97,6 +109,12 @@ variable "memory_size" {
   default     = 128
 }
 
+variable "ephemeral_storage_size" {
+  description = "Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB)."
+  type        = number
+  default     = 512
+}
+
 variable "publish" {
   description = "Whether to publish creation/change as new Lambda Function Version."
   type        = bool
@@ -157,6 +175,12 @@ variable "s3_object_tags" {
   default     = {}
 }
 
+variable "s3_object_tags_only" {
+  description = "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit."
+  type        = bool
+  default     = false
+}
+
 variable "package_type" {
   description = "The Lambda deployment package type. Valid options: Zip or Image"
   type        = string
@@ -187,6 +211,28 @@ variable "image_config_working_directory" {
   default     = null
 }
 
+###############
+# Function URL
+###############
+
+variable "create_unqualified_alias_lambda_function_url" {
+  description = "Whether to use unqualified alias pointing to $LATEST version in Lambda Function URL"
+  type        = bool
+  default     = true
+}
+
+variable "authorization_type" {
+  description = "The type of authentication that the Lambda Function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
+  type        = string
+  default     = "NONE"
+}
+
+variable "cors" {
+  description = "CORS settings to be used by the Lambda Function URL"
+  type        = any
+  default     = {}
+}
+
 ########
 # Layer
 ########
@@ -195,6 +241,12 @@ variable "layer_name" {
   description = "Name of Lambda Layer to create"
   type        = string
   default     = ""
+}
+
+variable "layer_skip_destroy" {
+  description = "Whether to retain the old version of a previously deployed Lambda Layer."
+  type        = bool
+  default     = false
 }
 
 variable "license_info" {

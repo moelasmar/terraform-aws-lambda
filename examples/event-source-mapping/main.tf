@@ -24,16 +24,30 @@ module "lambda_function" {
 
   event_source_mapping = {
     sqs = {
-      event_source_arn = aws_sqs_queue.this.arn
+      event_source_arn        = aws_sqs_queue.this.arn
+      function_response_types = ["ReportBatchItemFailures"]
     }
     dynamodb = {
       event_source_arn           = aws_dynamodb_table.this.stream_arn
       starting_position          = "LATEST"
       destination_arn_on_failure = aws_sqs_queue.failure.arn
+      filter_criteria = {
+        pattern = jsonencode({
+          eventName : ["INSERT"]
+        })
+      }
     }
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn
       starting_position = "LATEST"
+      filter_criteria = {
+        pattern = jsonencode({
+          data : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Oslo"]
+          }
+        })
+      }
     }
     mq = {
       event_source_arn = aws_mq_broker.this.arn
@@ -49,6 +63,32 @@ module "lambda_function" {
         }
       ]
     }
+    #    self_managed_kafka = {
+    #      batch_size        = 1
+    #      starting_position = "TRIM_HORIZON"
+    #      topics            = ["topic1", "topic2"]
+    #      self_managed_event_source = [
+    #        {
+    #          endpoints = {
+    #            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
+    #          }
+    #        }
+    #      ]
+    #      source_access_configuration = [
+    #        {
+    #          type = "SASL_SCRAM_512_AUTH",
+    #          uri  = "SECRET_AUTH_INFO"
+    #        },
+    #        {
+    #          type = "VPC_SECURITY_GROUP",
+    #          uri  = "security_group:sg-12345678"
+    #        },
+    #        {
+    #          type = "VPC_SUBNET"
+    #          uri  = "subnet:subnet-12345678"
+    #        }
+    #      ]
+    #    }
   }
 
   allowed_triggers = {
