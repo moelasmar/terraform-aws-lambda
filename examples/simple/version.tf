@@ -11,4 +11,14 @@ terraform {
       version = ">= 2.0"
     }
   }
+  
+  backend "s3" {
+    # Update the remote backend below to support your environment
+    bucket         = "melasmar-sample-tf-state-us-west-1"
+    key            = "sample/terraform.tfstate"
+    region         = "us-west-1"
+    dynamodb_table = "sample-terraform-state"
+    encrypt        = true
+  }
+  
 }
