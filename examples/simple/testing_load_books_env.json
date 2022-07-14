@@ -1,0 +1,5 @@
+{
+    "module.load_books.aws_lambda_function.this[0]": {
+        "books_input": "testing_books_input.csv"
+    }
+}
