@@ -1,0 +1,26 @@
+source /Volumes/workplace/aws-sam-cli/network_host_issue/bin/activate
+
+
+terraform plan -out temp.plan
+resource "aws_lambda_function
+
+lambdas:
+ module.get_country_languages.aws_lambda_function.this[0] 
+ module.load_books.aws_lambda_function.this[0]
+ module.list_books.aws_lambda_function.this[0]
+
+
+samdev build --hook-package-id tf
+samdev local invoke --hook-package-id tf --event country_language_event.json module.get_country_languages.aws_lambda_function.this[0]
+
+terraform apply -auto-approve
+samdev build --hook-package-id tf
+samdev local invoke --hook-package-id tf --region us-west-1 --env-vars testing_load_books_env.json module.load_books.aws_lambda_function.this[0]
+
+samdev local invoke --hook-package-id tf --region us-west-1 module.list_books.aws_lambda_function.this[0]
+
+samdev local invoke --hook-package-id tf --region us-west-1 -d 9999 module.list_books.aws_lambda_function.this[0]
+
+
+
+samdev sync --hook-package-id tf --watch --no-dependency-layer --region us-west-1
