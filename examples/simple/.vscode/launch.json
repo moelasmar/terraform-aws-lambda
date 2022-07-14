@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "list tables debugging",
+            "type": "python",
+            "request": "attach",
+            "host": "127.0.0.1",
+            "port": 9999,
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/fixtures/list_books",
+                    "remoteRoot": "/var/task"
+                }
+            ]
+        }
+    ]
+}
