@@ -68,7 +68,7 @@ module "load_books" {
     s3_all = {
       effect    = "Allow",
       actions   = ["s3:*"],
-      resources = [aws_s3_bucket.books_input_bucket.bucket]
+      resources = ["*"]
     },
     
     dynamodb_all = {
